@@ -112,6 +112,33 @@
       "Default": 1,
       "MinValue": 0,
       "ConstraintDescription": "Should be a 0 or larger."
+    },
+
+    "TargetEnvironment" : {
+      "Description" : "Target deployment environment.",
+      "Type" : "String",
+      "Default" : "dev",
+      "AllowedValues" : [
+        "dev",
+        "qa",
+        "staging",
+        "uat",
+        "prod"
+      ],
+      "ConstraintDescription" : "must be a valid environment."
+    },
+    "TargetPodNum" : {
+      "Description" : "Target pod grouping.",
+      "Type" : "String",
+      "Default" : "1",
+      "AllowedValues" : [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "ConstraintDescription" : "must be a valid pod grouping."
     }
   },
 
@@ -312,7 +339,32 @@
         "Tags" : [
           { "Key": "ClusterName",
             "Value": { "Ref" : "ClusterNameInput" },
-            "PropagateAtLaunch" : true
+            "PropagateAtLaunch" : "true"
+          },
+          {
+            "Key": "Environment",
+            "Value": { "Ref": "TargetEnvironment" },
+            "PropagateAtLaunch":"true"
+          },
+          {
+            "Key": "PodNum",
+            "Value": { "Ref": "TargetPodNum" },
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Application",
+            "Value": "WebServer",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Component",
+            "Value":"Tomcat",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Count",
+            "Value": "NotGiven",
+            "PropagateAtLaunch": "true"
           }
         ],
 
