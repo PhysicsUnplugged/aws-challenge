@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "AWS CloudFormation Sample Template AutoScalingMultiAZWithNotifications: Create a multi-az, load balanced and Auto Scaled sample web site running on an Apache Web Server. The application is configured to span all Availability Zones in the region and is Auto-Scaled based on the CPU utilization of the web servers. Notifications will be sent to the operator email address on scaling events. The instances are load balanced with a simple health check against the default web page. **WARNING** This template creates one or more Amazon EC2 instances and an Elastic Load Balancer. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description" : "AWS CloudFormation Create to auto scale a sample web site running on an Apache Web Server port 80. The stack allows a number of customizations per the README.md.  **WARNING** This template creates one or more Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
 
   "Parameters" : {
 
@@ -349,6 +349,23 @@
             "PropagateAtLaunch" : "true"
           },
           {
+            "Key": "Name",
+            "Value":
+              { "Fn::Join" :
+                [ "-",
+                  [
+                    { "Ref": "TargetEnvironment" },
+                    { "Ref" : "ClusterNameInput" },
+                    { "Ref": "TargetPodNum" },
+                         "WebServer",
+                         "httpd",
+                         "NotGiven"
+                  ]
+                ]
+              },
+            "PropagateAtLaunch":"true"
+          },
+          {
             "Key": "Environment",
             "Value": { "Ref": "TargetEnvironment" },
             "PropagateAtLaunch":"true"
@@ -375,7 +392,6 @@
           }
         ],
 
-        "LoadBalancerNames" : [ { "Ref" : "ElasticLoadBalancer" } ],
         "NotificationConfiguration" : {
           "TopicARN" : { "Ref" : "NotificationTopic" },
           "NotificationTypes" : [ "autoscaling:EC2_INSTANCE_LAUNCH",
@@ -542,64 +558,18 @@
       }
     },
 
-    "ElasticLoadBalancer" : {
-      "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties" : {
-        "AvailabilityZones" : { "Fn::GetAZs" : "" },
-        "CrossZone" : "true",
-        "Listeners" : [ {
-          "LoadBalancerPort" : "80",
-          "InstancePort" : "80",
-          "Protocol" : "HTTP"
-        } ],
-        "HealthCheck" : {
-          "Target" : "HTTP:80/",
-          "HealthyThreshold" : "3",
-          "UnhealthyThreshold" : "5",
-          "Interval" : "30",
-          "Timeout" : "5"
-        }
-      }
-    },
-
     "InstanceSecurityGroup" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription": "Enable SSH access and Custom port from the load balancer only",
-        "SecurityGroupIngress" : [ {
+        "SecurityGroupIngress" : [
+        {
           "IpProtocol" : "tcp",
-          "FromPort" : "22",
-          "ToPort" : "22",
+          "FromPort" : { "Ref": "OpenInstancePort" },
+          "ToPort" : { "Ref": "OpenInstancePort" },
           "CidrIp" : { "Ref" : "SSHLocation"}
-        },
-          {
-            "IpProtocol" : "tcp",
-            "FromPort" : "80",
-            "ToPort" : "80",
-            "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},
-            "SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}
-          },
-          {
-            "IpProtocol" : "tcp",
-            "FromPort" : { "Ref": "OpenInstancePort" },
-            "ToPort" : { "Ref": "OpenInstancePort" },
-            "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},
-            "SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}
           } ]
       }
-    }
-  },
-
-  "Outputs" : {
-    "InstanceID" : {
-      "Description": "The Instance IDs",
-      "Value": {
-        "Ref": "WebServerGroup"
-      }
-    },
-    "URL" : {
-      "Description" : "The URL of the website",
-      "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "ElasticLoadBalancer", "DNSName" ]}]]}
     }
   }
 }
