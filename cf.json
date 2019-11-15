@@ -292,7 +292,7 @@
         "Examples": "https://s3-eu-west-1.amazonaws.com/cloudformation-examples-eu-west-1"
       },
       "eu-west-2" : {
-        "Examples" : "https://s3-eu-west-2.amazonaws.com/cloudformation-examples-eu-west-2",
+        "Examples" : "https://s3-eu-west-2.amazonaws.com/cloudformation-examples-eu-west-2"
       },
       "eu-central-1": {
         "Examples": "https://s3-eu-central-1.amazonaws.com/cloudformation-examples-eu-central-1"
@@ -316,7 +316,7 @@
         "Examples": "https://s3-us-east-2.amazonaws.com/cloudformation-examples-us-east-2"
       },
       "ca-central-1" : {
-        "Examples" : "https://s3-ca-central-1.amazonaws.com/cloudformation-examples-ca-central-1",
+        "Examples" : "https://s3-ca-central-1.amazonaws.com/cloudformation-examples-ca-central-1"
       },
       "sa-east-1": {
         "Examples": "https://s3-sa-east-1.amazonaws.com/cloudformation-examples-sa-east-1"
@@ -468,6 +468,7 @@
           "#!/bin/bash -xe\n",
           "yum update -y aws-cfn-bootstrap\n",
           "yum update -y aws-cli\n",
+          "yum update -y\n",
           "/opt/aws/bin/cfn-init -v ",
           "         --stack ", { "Ref" : "AWS::StackName" },
           "         --resource LaunchConfig ",
@@ -571,6 +572,13 @@
           "ToPort" : "22",
           "CidrIp" : { "Ref" : "SSHLocation"}
         },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "80",
+            "ToPort" : "80",
+            "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},
+            "SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}
+          },
           {
             "IpProtocol" : "tcp",
             "FromPort" : { "Ref": "OpenInstancePort" },
