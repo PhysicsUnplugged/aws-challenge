@@ -8,6 +8,7 @@
     "ClusterNameInput" : {
       "Description" : "The autoscale group cluster name",
       "Type" : "String",
+      "Default": "PhysicsUnpluggedCluster",
       "ConstraintDescription" : "None given."
     },
 
@@ -82,7 +83,7 @@
     },
 
     "KeyName" : {
-      "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type" : "AWS::EC2::KeyPair::KeyName",
       "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
     },
@@ -290,6 +291,9 @@
       "eu-west-1": {
         "Examples": "https://s3-eu-west-1.amazonaws.com/cloudformation-examples-eu-west-1"
       },
+      "eu-west-2" : {
+        "Examples" : "https://s3-eu-west-2.amazonaws.com/cloudformation-examples-eu-west-2",
+      },
       "eu-central-1": {
         "Examples": "https://s3-eu-central-1.amazonaws.com/cloudformation-examples-eu-central-1"
       },
@@ -310,6 +314,9 @@
       },
       "us-east-2": {
         "Examples": "https://s3-us-east-2.amazonaws.com/cloudformation-examples-us-east-2"
+      },
+      "ca-central-1" : {
+        "Examples" : "https://s3-ca-central-1.amazonaws.com/cloudformation-examples-ca-central-1",
       },
       "sa-east-1": {
         "Examples": "https://s3-sa-east-1.amazonaws.com/cloudformation-examples-sa-east-1"
@@ -358,7 +365,7 @@
           },
           {
             "Key": "Component",
-            "Value":"Tomcat",
+            "Value":"httpd",
             "PropagateAtLaunch": "true"
           },
           {
